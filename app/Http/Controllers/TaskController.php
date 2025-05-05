@@ -13,21 +13,30 @@ use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 class TaskController extends Controller
 {
     use AuthorizesRequests;
-    public function index() {
+    public function index()
+    {
         $tasks = auth()->user()->tasks()->with('subtasks')->latest()->get();
         return Inertia::render('Tasks/Index', [
             'tasks' => $tasks
         ]);
+
     }
 
-    public function store(Request $request) {
+    public function store(Request $request)
+    {
+
         $data = $request->validate([
-            'title' => 'required',
-            'description' => 'nullable',
-            'due_date' => 'nullable|date',
+            'title'         => 'required|string|max:100',
+            'description'   => 'nullable|string|max:200',
+            'status'        => 'required|in:todo,in_progress,done',
+            'due_date'      => 'nullable|date',
         ]);
         $task = auth()->user()->tasks()->create($data);
-        return redirect()->route('tasks.index')->with('success', 'Task created successfully.');
+//        return redirect()->route('tasks.index')->with('success', 'Task created successfully.');
+
+        return Inertia::render('Tasks/Index', [
+            'tasks' => auth()->user()->tasks()->latest()->get(),
+            'success' => 'تسک با  موفقیت ذخیره شد ']);
     }
 
     public function edit(Task $task)
@@ -36,6 +45,13 @@ class TaskController extends Controller
 
     }
 
+    public  function show(Task $task)
+    {
+        $tasks = auth()->user()->tasks()->with('subtasks')->latest()->get();
+        return Inertia::render('Tasks/Index', [
+            'tasks' => $tasks
+        ]);
+    }
 
     public function update(Request $request, Task $task)
     {
@@ -43,17 +59,22 @@ class TaskController extends Controller
 
         $this->authorize('update', $task);
 
-        $data = $request->validate([
-            'title' => 'required',
-            'description' => 'nullable',
-            'status' => 'required|in:todo,in_progress,done',
-            'due_date' => 'nullable|date',
+        $data = $request->validate(
+        [
+            'title'         => 'required|string|max:100',
+            'description'   => 'nullable|string|max:200',
+            'status'        => 'required|in:todo,in_progress,done',
+            'due_date'      => 'nullable|date',
         ]);
 
 
         $task->update($data);
 
-        return redirect()->route('tasks.index')->with('success', 'Task updated successfully.');
+        return Inertia::render('Tasks/Index', [
+            'tasks' => auth()->user()->tasks()->latest()->get(),
+            'success' => 'تسک با موفقیت ویرایش شد'
+        ]);
+//        return redirect()->route('tasks.index')->with('success', 'Task updated successfully.');
     }
 
     public function destroy(Task $task) {

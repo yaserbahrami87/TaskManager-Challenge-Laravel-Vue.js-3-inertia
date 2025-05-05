@@ -1,21 +1,12 @@
 <script setup>
 import { Head, Link } from '@inertiajs/vue3';
+//import route from 'ziggy-js';
 
-defineProps({
-    canLogin: {
-        type: Boolean,
-    },
-    canRegister: {
-        type: Boolean,
-    },
-    laravelVersion: {
-        type: String,
-        required: true,
-    },
-    phpVersion: {
-        type: String,
-        required: true,
-    },
+const props = defineProps({
+    canLogin: Boolean,
+    canRegister: Boolean,
+    laravelVersion: { type: String, required: true },
+    phpVersion: { type: String, required: true }
 });
 
 function handleImageError() {

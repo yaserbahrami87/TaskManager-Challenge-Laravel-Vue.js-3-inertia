@@ -17,8 +17,12 @@ class SubtaskController extends Controller
         return back()->with('success', 'Subtask created.');
     }
 
-    public function update(Request $request, Subtask $subtask) {
-        $data = $request->validate(['title' => 'required', 'is_done' => 'required|boolean']);
+    public function update(Request $request, Subtask $subtask)
+    {
+        $data = $request->validate([
+            'title' => 'required',
+            'is_done' => 'required|boolean'
+        ]);
         $subtask->update($data);
         $this->updateTaskStatusIfNeeded($subtask->task);
         return back()->with('success', 'Subtask updated.');
@@ -32,6 +36,7 @@ class SubtaskController extends Controller
     }
 
     protected function updateTaskStatusIfNeeded(Task $task) {
+
         $allDone = $task->subtasks()->count() > 0 && $task->subtasks()->where('is_done', false)->count() === 0;
         if ($allDone) {
             $task->update(['status' => 'done']);
